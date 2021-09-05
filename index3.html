@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+    <title>Комментарии</title>
+    <style>
+.container{
+    margin: 0 auto;
+    width: 50%;
+    border: 5px solid rgb(61, 61, 190); 
+}
+.title1{
+margin-left: 10px;
+margin-top: 20px;
+color: rgb(83, 82, 82);
+}
+.title2{
+    color: rgb(83, 82, 82);
+    margin-top: 10px;
+    margin-left: 10px;
+}
+.textarea{            
+    width: 90%;
+    margin-left: 20px;
+}
+.btn-warning{
+    margin-bottom: 10px;
+}
+.title3{
+    margin-left: 10px;
+    margin-bottom: 100px;
+            
+}
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="title1">Hi</div><hr>
+    <div class="title2" >How are you?</div><hr>
+    <div class="title3"> <span class="out" id="result"></span></div><hr>
+    <div>
+        <label for="author"> Name *
+        <span id="authorError"></span>
+    </label>
+    </div>
+    <div>
+        <input type="text" name="author" value="" id="author" class="inputs">
+    </div>
+    <div>
+        <input type="file" onchange="onFileSelected(event)" name="file" id="file" class="input" placeholder="Add photo">
+        <img id="image" height="50px">
+    </div>
+    <div>
+        <label for="comment">Comment:
+            <span id="commentError"></span>
+        </label>
+    </div>
+    <div>
+    <textarea class="textarea" rows="6" cols="67" placeholder="Comment" id="comment"></textarea><br>
+<div class="d-grid gap-2 col-8 mx-auto">
+<button onclick="checkMessage()" class="btn btn-warning" type="button">Send</button>        
+</div>
+</div>  
+<script>
+
+let imageSrc;
+
+document.addEventListener('DOMContentLoaded',function(event){
+    let name = localStorage.getItem('name');
+    if (name!= null){
+        document.getElementById('author').value = name;
+    }
+});
+
+function onFileSelected(event){
+    let selectedFile = event.target.files[0];
+    let reader = new FileReader();
+    let image = document.getElementById('image');
+    image.title = selectedFile.name;
+    reader.onload = function (event) {
+        image.src = event.target.result;
+    };
+
+    reader.readAsDataURL(selectedFile);
+}
+
+function sendMessage(image,author,comment){
+    imageSrc = getBase64Image(image);
+    document.getElementById('result').innerHTML +=
+    `<img src="data:image/png;base64,${imageSrc}"><span class='author'>${author}:</span><span>${comment}</span><br>`;
+}
+
+function checkMessage(){
+    let image =document.getElementById('image');
+    let author = document.getElementById('author').value;
+    let comment = document.getElementById('comment').value;
+    if (localStorage.getItem('name')== null){
+        localStorage.setItem('name',author);
+    }
+    let textarea = document.querySelectorAll('textarea'); 
+        for (let i = 0;  i < textarea.length; i++) {
+            textarea[i].value = '';
+    };
+
+    sendMessage(image,author,comment);
+}
+
+function getBase64Image(img) {
+    let canvas = document.createElement("canvas");
+    let ctx = canvas.getContext("2d");
+    ctx.drawImage(img, 0, 0);
+    let dataURL = canvas.toDataURL("image/png");
+    return dataURL.replace(/^data:image\/(png|jpg);base64,/, "");
+    }
+
+function checkSpam() {
+    let comment = document.getElementById('comment').value;
+    let result = document.getElementById("result");
+    let xxx = /xxx/ig;
+    result.innerHTML = result.innerHTML.replace(xxx,"***");
+    let viagra = /viagra/ig;
+    result.innerHTML = result.innerHTML.replace(viagra,"***");
+}  
+    </script>
+</body>
+</html>
